@@ -18,10 +18,19 @@
             <el-icon><Menu /></el-icon>
             <span>概览</span>
           </el-menu-item>
+          <!-- 节点详情 -->
+          <el-menu-item index="/nodes">
+            <el-icon><location /></el-icon>
+            <span>节点详情</span>
+          </el-menu-item>
           <!-- 命名空间 -->
-          <el-menu-item index="/workloads/namespace">
+          <el-menu-item index="/namespaces">
             <el-icon><location /></el-icon>
             <span>命名空间</span>
+          </el-menu-item>
+          <el-menu-item index="/pods">
+            <el-icon><location /></el-icon>
+            <span>Pod容器组</span>
           </el-menu-item>
           <!-- 负载 -->
           <el-sub-menu index="/workloads">
@@ -29,23 +38,19 @@
               <el-icon><location /></el-icon>
               <span>工作负载</span>
             </template>
-            <el-menu-item index="/workloads/pods">
-              <el-icon><location /></el-icon>
-              <span>Pod容器组</span>
-            </el-menu-item>
-            <el-menu-item index="/workloads/deployments">
+            <el-menu-item index="/workloads/deployment">
               <el-icon><location /></el-icon>
               <span>Deployment</span>
             </el-menu-item>
-            <el-menu-item index="/workloads/statefulsets">
+            <el-menu-item index="/workloads/statefulset">
               <el-icon><location /></el-icon>
               <span>StatefulSet</span>
             </el-menu-item>
-            <el-menu-item index="/workloads/daemonsets">
+            <el-menu-item index="/workloads/daemonset">
               <el-icon><location /></el-icon>
               <span>DaemonSet</span>
             </el-menu-item>
-            <el-menu-item index="/workloads/jobs">
+            <el-menu-item index="/workloads/job">
               <el-icon><location /></el-icon>
               <span>Job</span>
             </el-menu-item>
@@ -57,15 +62,15 @@
               <span>网络</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="/resources/ingresses">
+              <el-menu-item index="/networks/ingress">
                 <el-icon><location /></el-icon>
                 <span>Ingress</span>
               </el-menu-item>
-              <el-menu-item index="/resources/services">
+              <el-menu-item index="/networks/service">
                 <el-icon><location /></el-icon>
                 <span>Service</span>
               </el-menu-item>
-              <el-menu-item index="/resources/gateways">
+              <el-menu-item index="/networks/gateway">
                 <el-icon><location /></el-icon>
                 <span>Gateway</span>
               </el-menu-item>
@@ -77,15 +82,15 @@
               <el-icon><location /></el-icon>
               <span>存储</span>
             </template>
-            <el-menu-item index="/resources/pv">
+            <el-menu-item index="/storages/pv">
               <el-icon><location /></el-icon>
               <span>PersistentVolume</span>
             </el-menu-item>
-            <el-menu-item index="/resources/pvc">
+            <el-menu-item index="/storages/pvc">
               <el-icon><location /></el-icon>
               <span>PersistentVolumeClaim</span>
             </el-menu-item>
-            <el-menu-item index="/resources/storageclasses">
+            <el-menu-item index="/storages/storageclass">
               <el-icon><location /></el-icon>
               <span>StorageClass</span>
             </el-menu-item>
@@ -96,11 +101,11 @@
               <el-icon><location /></el-icon>
               <span>配置</span>
             </template>
-            <el-menu-item index="/resources/configmaps">
+            <el-menu-item index="/configs/configmap">
               <el-icon><location /></el-icon>
               <span>ConfigMap</span>
             </el-menu-item>
-            <el-menu-item index="/resources/secrets">
+            <el-menu-item index="/configs/secret">
               <el-icon><location /></el-icon>
               <span>Secret</span>
             </el-menu-item>
@@ -111,34 +116,29 @@
               <el-icon><location /></el-icon>
               <span>安全</span>
             </template>
-            <el-menu-item index="/resources/serviceaccounts">
+            <el-menu-item index="/securities/sa">
               <el-icon><location /></el-icon>
               <span>ServiceAccount</span>
             </el-menu-item>
-            <el-menu-item index="/resources/roles">
+            <el-menu-item index="/securities/role">
               <el-icon><location /></el-icon>
               <span>Role</span>
             </el-menu-item>
-            <el-menu-item index="/resources/rolebindings">
+            <el-menu-item index="/securities/rolebinding">
               <el-icon><location /></el-icon>
               <span>RoleBinding</span>
             </el-menu-item>
-            <el-menu-item index="/resources/clusterroles">
+            <el-menu-item index="/securities/clusterrole">
               <el-icon><location /></el-icon>
               <span>ClusterRole</span>
             </el-menu-item>
-            <el-menu-item index="/resources/clusterrolebindings">
+            <el-menu-item index="/securities/clusterrolebinding">
               <el-icon><location /></el-icon>
               <span>ClusterRoleBinding</span>
             </el-menu-item>
           </el-sub-menu>
-          <!-- 节点详情 -->
-          <el-menu-item index="/resources/nodes">
-            <el-icon><location /></el-icon>
-            <span>节点详情</span>
-          </el-menu-item>
           <!-- 用户信息 -->
-          <el-menu-item index="/resources/user">
+          <el-menu-item index="/userinfo">
             <el-icon><location /></el-icon>
             <span>用户信息</span>
           </el-menu-item>
@@ -220,12 +220,14 @@ const breadcrumbList = computed(() => {
 .layout {
   display: flex;
   height: 100vh;
-  background-color: #fafafa;
+  background-color: #f3f4f6;
   .sidebar {
     transition: width 0.3s ease;
     display: flex;
     flex-direction: column;
     margin: 5px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     &.el-menu--collapse {
       width: 64px;
     }
@@ -233,22 +235,36 @@ const breadcrumbList = computed(() => {
       height: 100%;
       :deep(.el-scrollbar__bar) {
         opacity: 0;
-        /* 或者 display: none; */
-        // display: none;
       }
       .menu {
         flex: 1;
         border-right: none;
-        background-color: #fafafa;
-        color: #303133;
+        color: #343a40;
         .logo {
           width: 100%;
           height: 60px;
           overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-bottom: 1px solid #e9ecef;
           h3 {
             text-align: center;
             line-height: 60px;
-            color: #0179d6;
+            color: #495057;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+          }
+        }
+        .el-menu-item,
+        .el-sub-menu__title {
+          &:hover {
+            background-color: #f8f9fa !important;
+          }
+          &.is-active {
+            background-color: #e7f1ff !important;
+            color: #5c7cfa !important;
           }
         }
       }
@@ -256,38 +272,78 @@ const breadcrumbList = computed(() => {
   }
   .main-container {
     flex: 1;
-    background-color: #fff;
     margin: 5px;
-    border-radius: 5px;
-    box-shadow: 5px 5px 10px #888;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     .header {
       height: 60px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 0 20px;
-      border-bottom: 1px solid #e4e4e7;
+      border-bottom: 1px solid #e9ecef;
       .left {
         display: flex;
         align-items: center;
-        .el-breadcrumb {
-          opacity: 0.9;
-          font-size: 16px;
+        gap: 15px;
+        .el-icon {
+          cursor: pointer;
+          color: #495057;
+          transition: color 0.3s ease;
+          &:hover {
+            color: #5c7cfa;
+          }
         }
         .split {
-          margin: 0px 10px;
+          margin: 0 10px;
+          color: #dee2e6;
+        }
+        .breadcrumb {
+          margin: 0;
+          .el-breadcrumb {
+            opacity: 0.8;
+            font-size: 14px;
+            .el-breadcrumb-item {
+              a {
+                color: #495057;
+                &:hover {
+                  color: #5c7cfa;
+                }
+              }
+            }
+          }
         }
       }
       .right {
         display: flex;
         align-items: center;
-        padding: 15px;
         gap: 20px;
+        .el-icon {
+          cursor: pointer;
+          color: #495057;
+          transition: color 0.3s ease;
+          &:hover {
+            color: #5c7cfa;
+          }
+        }
         .el-dropdown-link {
           cursor: pointer;
-          color: var(--el-color-primary);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          .el-avatar {
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s ease;
+            &:hover {
+              border-color: #5c7cfa;
+            }
+          }
         }
       }
+    }
+    .main {
+      padding: 20px;
     }
   }
 }
